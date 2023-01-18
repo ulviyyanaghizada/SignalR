@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Manage/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<Product>
+<div class="container">
+    <div class="card mt-5">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>SKU</th>
+                        <th>CostPrice</th>
+                        <th>SellPrice</th>
+                        <th>Discount</th>
+                        <th>Status</th>
+                        <th>Colors</th>
+                        <th>Sizes</th>
+                        <th>Cover Image</th>
+                        <th colspan="3">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Name</td>
+                            <td>@item.Description</td>
+                            <td>@item.SKU</td>
+                            <td>@item.CostPrice</td>
+                            <td>@item.SellPrice</td>
+                            <td>@item.Discount</td>
+                            <td>@item.IsDeleted</td>
+                            <td>
+                                @foreach (var color in item?.ProductColors.Where(pc => pc.ProductId == item.Id))
+                                {
+                                    <span>@color.Color.Name</span>
+                                }</td>
+                             <td>
+                                @foreach (var size in item?.ProductSizes.Where(ps => ps.ProductId == item.Id))
+                                {
+                                     <span>@size.Size.Name.ToUpper()</span>
+                                }</td>
+                            <td><img width="40" src="~/assets/images/product/@item?.ProductImages.FirstOrDefault(pi=>pi.IsCover == true)?.ImageUrl" /></td>
+                            <td><a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a></td>
+                            <td><a class="btn btn-success" asp-action="UpdateProduct" asp-route-id="@item.Id">UpdateProduct</a></td>
+                            <td><a class="btn btn-success" asp-action="UpdateProductImage" asp-route-id="@item.Id">UpdateProductImage</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+                    <nav aria-label="...">
+                        <ul class="pagination pagination-lg">
+                            @if (ViewBag.CurrentPage>1)
+                            {
+                                <li class="page-item active" aria-current="page" >
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage-1)" tabindex="-1">Previous</a>
+                                </li>
+                            }
+                            @for (int i = 1; i <= ViewBag.MaxPageCount; i++)
+                            {
+                                <li class="page-item active @(ViewBag.CurrentPage==i?"disabled":"")" >
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i" tabindex="-1">@i</a>
+                                </li>
+                            }
+                    @if (ViewBag.CurrentPage < ViewBag.MaxPageCount)
+                    {
+                        <li class="page-item active" aria-current="page">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage+1)" tabindex="-1">Next</a>
+                        </li>
+                    }
+                        </ul>
+                    </nav>
+        </div>
+    </div>
+</div>
+
